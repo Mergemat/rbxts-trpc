@@ -1,1 +1,1 @@
-export * from "../out/react/index";
+export * from "../dist/react/index";

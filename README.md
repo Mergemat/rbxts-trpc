@@ -1,4 +1,4 @@
-# @rbxts/trpc
+# rbxts-trpc
 
 Type-safe tRPC-style procedures and events for Roblox TS, built on top of `@rbxts/remo`.
 
@@ -12,7 +12,7 @@ Everything else (guides, API reference, React usage, events/procedures, and LLM 
 ## Install
 
 ```sh
-bun add @rbxts/trpc @rbxts/remo @rbxts/t
+bun add rbxts-trpc @rbxts/remo @rbxts/t
 ```
 
 If you use React helpers, also install `@rbxts/react`.
@@ -21,7 +21,7 @@ If you use React helpers, also install `@rbxts/react`.
 
 ```ts
 import { t as v } from "@rbxts/t";
-import { createClient, createServer, initTRPC } from "@rbxts/trpc";
+import { createClient, createServer, initTRPC } from "rbxts-trpc";
 
 const trpc = initTRPC()
 	.context<{ player?: Player }>()

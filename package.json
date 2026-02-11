@@ -1,16 +1,16 @@
 {
-	"name": "@rbxts/trpc",
+	"name": "rbxts-trpc",
 	"version": "1.0.0",
 	"description": "Type-safe tRPC-style procedures and events for Roblox TypeScript.",
-	"main": "out/init.luau",
+	"main": "dist/init.luau",
 	"exports": {
 		".": {
-			"types": "./index.d.ts",
-			"default": "./out/init.luau"
+			"types": "./dist/index.d.ts",
+			"default": "./dist/init.luau"
 		},
 		"./react": {
-			"types": "./react/index.d.ts",
-			"default": "./out/react/init.luau"
+			"types": "./dist/react/index.d.ts",
+			"default": "./dist/react/init.luau"
 		}
 	},
 	"scripts": {
@@ -41,15 +41,12 @@
 	},
 	"homepage": "https://rbxts-trpc.vercel.app",
 	"type": "commonjs",
-	"types": "index.d.ts",
-	"typings": "index.d.ts",
+	"types": "dist/index.d.ts",
+	"typings": "dist/index.d.ts",
 	"files": [
-		"index.d.ts",
-		"react/index.d.ts",
-		"react/init.luau",
-		"out",
-		"!out/examples/**",
-		"!out/tests/**",
+		"dist",
+		"!dist/examples/**",
+		"!dist/tests/**",
 		"!**/*.tsbuildinfo"
 	],
 	"publishConfig": {

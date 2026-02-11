@@ -8,7 +8,7 @@ The React helpers are intentionally small and explicit.
 ## Query + Mutation pattern
 
 ```tsx
-import { invalidateRPCQuery, useRPCMutation, useRPCQuery } from "@rbxts/trpc/react";
+import { invalidateRPCQuery, useRPCMutation, useRPCQuery } from "rbxts-trpc/react";
 
 const todosQuery = useRPCQuery(client.todos.getAll, undefined);
 
@@ -23,7 +23,7 @@ const addTodo = useRPCMutation(client.todos.add, {
 ## Event-driven refresh pattern
 
 ```tsx
-import { useRPCEvent } from "@rbxts/trpc/react";
+import { useRPCEvent } from "rbxts-trpc/react";
 
 useRPCEvent(client.todos.changed, () => {
 	todosQuery.refetch();

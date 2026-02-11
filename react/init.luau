@@ -1,1 +1,1 @@
-return require(script.Parent.Parent.out.react.init)
+return require(script.Parent.Parent.dist.react.init)
