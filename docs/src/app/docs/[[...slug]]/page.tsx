@@ -23,7 +23,7 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
 				{hasGitConfig ? (
 					<ViewOptions
 						markdownUrl={`${page.url}.mdx`}
-						githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
+						githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/docs/content/docs/${page.path}`}
 					/>
 				) : null}
 			</div>
