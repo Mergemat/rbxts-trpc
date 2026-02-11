@@ -21,6 +21,7 @@
 		"docs:dev": "bun run --cwd docs dev",
 		"docs:build": "bun run --cwd docs build",
 		"docs:lint": "bun run --cwd docs lint",
+		"prepare": "bun run build",
 		"prepublishOnly": "npm run build"
 	},
 	"keywords": [],
