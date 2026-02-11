@@ -5,11 +5,11 @@
 	"main": "out/init.luau",
 	"exports": {
 		".": {
-			"types": "./out/index.d.ts",
+			"types": "./index.d.ts",
 			"default": "./out/init.luau"
 		},
 		"./react": {
-			"types": "./out/react/index.d.ts",
+			"types": "./react/index.d.ts",
 			"default": "./out/react/init.luau"
 		}
 	},
@@ -42,9 +42,11 @@
 	},
 	"homepage": "https://rbxts-trpc.vercel.app",
 	"type": "commonjs",
-	"types": "out/index.d.ts",
-	"typings": "out/index.d.ts",
+	"types": "index.d.ts",
+	"typings": "index.d.ts",
 	"files": [
+		"index.d.ts",
+		"react/index.d.ts",
 		"out",
 		"!out/examples/**",
 		"!out/tests/**",
