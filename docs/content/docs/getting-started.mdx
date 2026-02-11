@@ -6,7 +6,7 @@ description: Install rbxts-trpc and wire your first client/server pair.
 ## Install
 
 ```sh
-bun add @rbxts/rbxts-trpc @rbxts/remo @rbxts/t
+bun add @rbxts/trpc @rbxts/remo @rbxts/t
 ```
 
 If you use React hooks, also install `@rbxts/react`.
@@ -14,7 +14,7 @@ If you use React hooks, also install `@rbxts/react`.
 ## 1) Create a factory
 
 ```ts
-import { initTRPC } from "@rbxts/rbxts-trpc";
+import { initTRPC } from "@rbxts/trpc";
 
 interface Context {
 	player?: Player;
@@ -52,7 +52,7 @@ export const appRouter = trpc.router({
 ## 3) Mount the server
 
 ```ts
-import { createServer } from "@rbxts/rbxts-trpc";
+import { createServer } from "@rbxts/trpc";
 
 const server = createServer({
 	t: trpc,
@@ -65,7 +65,7 @@ server.events.todos.changed.emitAll(["Milk", "Eggs", "Bread"]);
 ## 4) Use the client
 
 ```ts
-import { createClient } from "@rbxts/rbxts-trpc";
+import { createClient } from "@rbxts/trpc";
 
 const client = createClient({
 	t: trpc,
