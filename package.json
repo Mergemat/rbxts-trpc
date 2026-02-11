@@ -1,6 +1,6 @@
 {
 	"name": "rbxts-trpc",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Type-safe tRPC-style procedures and events for Roblox TypeScript.",
 	"main": "dist/init.luau",
 	"exports": {
