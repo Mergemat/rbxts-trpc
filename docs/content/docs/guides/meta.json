@@ -1,4 +1,4 @@
 {
 	"title": "Guides",
-	"pages": ["create-your-first-router", "server-client-flow", "react-usage-patterns"]
+	"pages": ["roblox-ts-project-structure", "create-your-first-router", "server-client-flow", "react-usage-patterns"]
 }

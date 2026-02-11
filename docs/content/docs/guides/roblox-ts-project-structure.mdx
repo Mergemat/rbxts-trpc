@@ -1,0 +1,71 @@
+---
+title: roblox-ts Project Structure
+description: What goes in client, server, and shared when using rbxts-trpc.
+---
+
+If you use the standard `roblox-ts` split (`client/`, `server/`, `shared/`), the easiest rule is:
+
+- `shared` = API contract (types, validators, router shape)
+- `server` = data authority and mutations
+- `client` = UI and user interactions
+
+## Recommended layout
+
+```text
+src/
+  shared/
+    trpc.ts
+    router.ts
+    validators/
+      todos.ts
+    types/
+      api.ts
+
+  server/
+    trpc/
+      bootstrap.server.ts
+    services/
+      todos.service.ts
+
+  client/
+    trpc/
+      client.ts
+    controllers/
+      todos.client.ts
+    ui/
+      todos.react.tsx
+```
+
+## What to put where
+
+### `shared/`
+
+- `trpc.ts`: `initTRPC().context<...>().create(...)`
+- `router.ts`: route names and validators
+- validator/type modules reused by both sides
+
+Keep this folder side-effect free.
+
+### `server/`
+
+- `createServer({ t, router })`
+- real data logic (DataStore/ProfileService/memory state)
+- emitting client events (`server.events.*`)
+
+All authoritative writes should happen here.
+
+### `client/`
+
+- `createClient({ t, router })`
+- calls to procedures and events
+- React hooks and presentation state
+
+Do not put trusted game logic here.
+
+## Example mapping in this repo
+
+- Shared contract: `src/examples/todo/shared/trpc.ts`, `src/examples/todo/shared/router.ts`
+- Server runtime: `src/examples/todo/server/todos.server.ts`
+- Client runtime/UI: `src/examples/todo/client/todos.client.ts`, `src/examples/todo/client/todos.react.tsx`
+
+The todo example keeps in-memory state in shared for simplicity. In real projects, move state/services into `server/services/*`.
