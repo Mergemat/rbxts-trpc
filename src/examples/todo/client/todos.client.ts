@@ -15,12 +15,12 @@ client.todos.changed.on((nextTodos) => {
 });
 
 client.todos.getAll
-	.call(undefined)
+	.query(undefined)
 	.then((initialTodos) => {
 		todos = initialTodos;
 		print(`[rbxts-trpc example] initial todos: ${todos.join(", ")}`);
 
-		client.todos.add.call("Bread");
+		client.todos.add.mutate("Bread");
 		client.todos.addViaEvent.emit("Butter");
 	})
 	.catch((clientError) => {

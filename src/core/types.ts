@@ -153,12 +153,19 @@ export interface RpcFailure {
 
 export type RpcResult<TData> = RpcSuccess<TData> | RpcFailure;
 
-export interface ProcedureCallProxy<TInput, TOutput, TIntent extends ProcedureIntent> {
+interface ProcedureCallProxyBase<TIntent extends ProcedureIntent> {
 	__kind: "procedure";
 	__path: string;
 	__intent: TIntent;
-	call: (input: TInput) => Promise<TOutput>;
 }
+
+export type ProcedureCallProxy<TInput, TOutput, TIntent extends ProcedureIntent> = TIntent extends "query"
+	? ProcedureCallProxyBase<TIntent> & {
+			query: (input: TInput) => Promise<TOutput>;
+		}
+	: ProcedureCallProxyBase<TIntent> & {
+			mutate: (input: TInput) => Promise<TOutput>;
+		};
 
 export interface ServerEventProxy<TInput> {
 	__kind: "serverEvent";

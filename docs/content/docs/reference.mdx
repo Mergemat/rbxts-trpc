@@ -94,7 +94,8 @@ const client = createClient({ t: trpc, router: appRouter });
 
 Generated proxies:
 
-- Procedures: `.call(input): Promise<output>`
+- Query procedures: `.query(input): Promise<output>`
+- Mutation procedures: `.mutate(input): Promise<output>`
 - Server events: `.emit(input): void`
 - Client events: `.on(listener): () => void`
 

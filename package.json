@@ -1,16 +1,16 @@
 {
 	"name": "@rbxts/trpc",
 	"version": "1.0.0",
-	"description": "",
-	"main": "out/init.lua",
+	"description": "Type-safe tRPC-style procedures and events for Roblox TypeScript.",
+	"main": "out/init.luau",
 	"exports": {
 		".": {
 			"types": "./out/index.d.ts",
-			"default": "./out/init.lua"
+			"default": "./out/init.luau"
 		},
 		"./react": {
 			"types": "./out/react/index.d.ts",
-			"default": "./out/react/init.lua"
+			"default": "./out/react/init.luau"
 		}
 	},
 	"scripts": {
@@ -24,13 +24,30 @@
 		"prepare": "bun run build",
 		"prepublishOnly": "npm run build"
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": [
+		"roblox",
+		"roblox-ts",
+		"trpc",
+		"rpc",
+		"types"
+	],
+	"author": "Mergemat",
 	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Mergemat/rbxts-trpc.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Mergemat/rbxts-trpc/issues"
+	},
+	"homepage": "https://rbxts-trpc.vercel.app",
 	"type": "commonjs",
 	"types": "out/index.d.ts",
+	"typings": "out/index.d.ts",
 	"files": [
 		"out",
+		"!out/examples/**",
+		"!out/tests/**",
 		"!**/*.tsbuildinfo"
 	],
 	"publishConfig": {

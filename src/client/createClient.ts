@@ -101,28 +101,30 @@ export function createClient<TContext, TRouter extends Router<TContext, any>>(op
 			}
 
 			if (isProcedureNode(node)) {
+				const execute = async (input: unknown) => {
+					const request = (remoteNode as { request: (payload: unknown) => Promise<RpcResult<unknown>> })
+						.request;
+
+					let result: RpcResult<unknown>;
+					try {
+						result = await request(input);
+					} catch (caught) {
+						const shape = formatError(options.t._config as never, caught);
+						throw new TRPCClientError(shape);
+					}
+
+					if (!result.ok) {
+						throw new TRPCClientError(result.error);
+					}
+
+					return result.data;
+				};
+
 				target[keyName] = {
 					__kind: "procedure",
 					__path: path,
 					__intent: node._def.intent,
-					call: async (input: unknown) => {
-						const request = (remoteNode as { request: (payload: unknown) => Promise<RpcResult<unknown>> })
-							.request;
-
-						let result: RpcResult<unknown>;
-						try {
-							result = await request(input);
-						} catch (caught) {
-							const shape = formatError(options.t._config as never, caught);
-							throw new TRPCClientError(shape);
-						}
-
-						if (!result.ok) {
-							throw new TRPCClientError(result.error);
-						}
-
-						return result.data;
-					},
+					...(node._def.intent === "query" ? { query: execute } : { mutate: execute }),
 				};
 				continue;
 			}

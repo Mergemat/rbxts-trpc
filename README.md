@@ -44,7 +44,7 @@ const server = createServer({ t: trpc, router: appRouter });
 server.events.todos.changed.emitAll(["Milk", "Eggs", "Bread"]);
 
 const client = createClient({ t: trpc, router: appRouter });
-client.todos.list.call(undefined).then((todos) => print(todos.size()));
+client.todos.list.query(undefined).then((todos) => print(todos.size()));
 ```
 
 ## Develop

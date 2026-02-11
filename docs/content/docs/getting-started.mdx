@@ -72,7 +72,7 @@ const client = createClient({
 	router: appRouter,
 });
 
-client.todos.list.call(undefined).then((todos) => print(todos.size()));
+client.todos.list.query(undefined).then((todos) => print(todos.size()));
 client.todos.changed.on((todos) => print(`changed ${todos.size()}`));
 ```
 

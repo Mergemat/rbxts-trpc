@@ -50,7 +50,7 @@ export function useRPCQuery<TInput, TOutput>(
 		setState((current: QueryState<TOutput>) => ({ ...current, isLoading: true }));
 
 		return procedure
-			.call(input)
+			.query(input)
 			.then((data) => {
 				queryCache[key] = data;
 				setState({ data, isLoading: false });
@@ -100,7 +100,7 @@ export function useRPCMutation<TInput, TOutput>(
 			setState((current: MutationState<TOutput>) => ({ ...current, isPending: true, error: undefined }));
 
 			return procedure
-				.call(input)
+				.mutate(input)
 				.then((data) => {
 					setState({ isPending: false, data });
 					options.onSuccess?.(data);
