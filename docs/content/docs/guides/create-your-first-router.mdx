@@ -54,6 +54,29 @@ export const appRouter = trpc.router({
 });
 ```
 
+## What `.intent(...)` does
+
+`intent` marks how a procedure is used:
+
+- `.intent("query")`: read-style call (fetches state)
+- `.intent("mutation")`: write-style call (changes state)
+
+If you do not set it, the default is `"mutation"`.
+
+```ts
+const getProfile = trpc.procedure
+	.intent("query")
+	.output<Profile>(profileValidator)
+	.resolve(({ ctx }) => loadProfile(ctx.player));
+
+const updateProfile = trpc.procedure
+	.intent("mutation")
+	.input<ProfilePatch>(profilePatchValidator)
+	.resolve(({ input, ctx }) => saveProfile(ctx.player, input));
+```
+
+Use `query` for reads so client-side query helpers map naturally to your API.
+
 ## Why mix procedures and events?
 
 - Procedures are request/response and easier to reason about

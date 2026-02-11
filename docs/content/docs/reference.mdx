@@ -31,6 +31,26 @@ Procedure builder chain:
 - `.intent('query' | 'mutation')` (default is `'mutation'`)
 - `.resolve(({ ctx, input, path, player, intent }) => output)`
 
+### Procedure intent
+
+`intent` is metadata that tells your app whether a procedure is read-like or write-like.
+
+- Use `query` for reads (menus, inventories, profile fetches)
+- Use `mutation` for writes (purchase, equip, save, delete)
+- Default is `mutation`, so set `query` explicitly on read endpoints
+
+```ts
+const listItems = trpc.procedure
+	.intent("query")
+	.output<Item[]>(itemListValidator)
+	.resolve(() => readItems());
+
+const buyItem = trpc.procedure
+	.intent("mutation")
+	.input<BuyInput>(buyValidator)
+	.resolve(({ input, ctx }) => purchase(ctx.player, input));
+```
+
 ## `trpc.event.server`
 
 Client -> server event.
