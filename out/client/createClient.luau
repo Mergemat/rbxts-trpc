@@ -58,10 +58,10 @@ local function createClient(options)
 			end
 			if isProcedureNode(node) then
 				local execute = TS.async(function(input)
-					local request = remoteNode.request
+					local requestRemote = remoteNode
 					local result
 					TS.try(function()
-						result = TS.await(request(input))
+						result = TS.await(requestRemote.request(requestRemote, input))
 					end, function(caught)
 						local shape = formatError(options.t._config, caught)
 						error(TRPCClientError.new(shape))
@@ -91,13 +91,15 @@ local function createClient(options)
 					__kind = "serverEvent",
 					__path = path,
 					emit = function(input)
-						remoteNode.fire(input)
+						local fireRemote = remoteNode
+						fireRemote.fire(fireRemote, input)
 					end,
 				}
 				continue
 			end
 			if isClientEventNode(node) then
-				remoteNode.connect(function(input)
+				local connectRemote = remoteNode
+				connectRemote.connect(connectRemote, function(input)
 					task.spawn(TS.async(function()
 						local listeners = listenersByPath[path] or {}
 						TS.try(function()

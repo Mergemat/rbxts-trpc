@@ -102,12 +102,13 @@ export function createClient<TContext, TRouter extends Router<TContext, any>>(op
 
 			if (isProcedureNode(node)) {
 				const execute = async (input: unknown) => {
-					const request = (remoteNode as { request: (payload: unknown) => Promise<RpcResult<unknown>> })
-						.request;
+					const requestRemote = remoteNode as {
+						request: (self: unknown, payload: unknown) => Promise<RpcResult<unknown>>;
+					};
 
 					let result: RpcResult<unknown>;
 					try {
-						result = await request(input);
+						result = await requestRemote.request(requestRemote, input);
 					} catch (caught) {
 						const shape = formatError(options.t._config as never, caught);
 						throw new TRPCClientError(shape);
@@ -134,14 +135,18 @@ export function createClient<TContext, TRouter extends Router<TContext, any>>(op
 					__kind: "serverEvent",
 					__path: path,
 					emit: (input: unknown) => {
-						(remoteNode as { fire: (payload: unknown) => void }).fire(input);
+						const fireRemote = remoteNode as { fire: (self: unknown, payload: unknown) => void };
+						fireRemote.fire(fireRemote, input);
 					},
 				};
 				continue;
 			}
 
 			if (isClientEventNode(node)) {
-				(remoteNode as { connect: (callback: (payload: unknown) => void) => () => void }).connect((input) => {
+				const connectRemote = remoteNode as {
+					connect: (self: unknown, callback: (payload: unknown) => void) => () => void;
+				};
+				connectRemote.connect(connectRemote, (input) => {
 					task.spawn(async () => {
 						const listeners = listenersByPath[path] ?? [];
 						try {

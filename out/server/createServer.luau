@@ -85,7 +85,8 @@ local function createServer(options)
 				continue
 			end
 			if isProcedure(node) then
-				remoteNode.onRequest(TS.async(function(player, input)
+				local requestRemote = remoteNode
+				requestRemote.onRequest(requestRemote, TS.async(function(player, input)
 					local _exitType, _returns = TS.try(function()
 						local result = TS.await(runProcedure({
 							config = options.t._config,
@@ -109,7 +110,8 @@ local function createServer(options)
 				continue
 			end
 			if isServerEvent(node) then
-				remoteNode.connect(function(player, input)
+				local connectRemote = remoteNode
+				connectRemote.connect(connectRemote, function(player, input)
 					task.spawn(TS.async(function()
 						TS.try(function()
 							TS.await(runServerEvent({
@@ -141,20 +143,21 @@ local function createServer(options)
 				continue
 			end
 			if isClientEvent(node) then
+				local eventRemote = remoteNode
 				eventsTarget[keyName] = {
 					__kind = "clientEvent",
 					__path = path,
 					emit = function(player, input)
-						return remoteNode.fire(player, input)
+						return eventRemote.fire(eventRemote, player, input)
 					end,
 					emitAll = function(input)
-						return remoteNode.fireAll(input)
+						return eventRemote.fireAll(eventRemote, input)
 					end,
 					emitAllExcept = function(player, input)
-						return remoteNode.fireAllExcept(player, input)
+						return eventRemote.fireAllExcept(eventRemote, player, input)
 					end,
 					emitPlayers = function(players, input)
-						return remoteNode.firePlayers(players, input)
+						return eventRemote.firePlayers(eventRemote, players, input)
 					end,
 				}
 			end
@@ -165,9 +168,10 @@ local function createServer(options)
 		remotes = remotes,
 		events = eventEmitters,
 		destroy = function(self)
-			local _result = remotes.destroy
+			local destroyRemote = remotes
+			local _result = destroyRemote.destroy
 			if _result ~= nil then
-				_result()
+				_result(destroyRemote)
 			end
 		end,
 	}

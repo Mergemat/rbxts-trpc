@@ -84,11 +84,14 @@ export function createServer<TContext, TRouter extends Router<TContext, any>>(op
 			}
 
 			if (isProcedure(node)) {
-				(
-					remoteNode as {
-						onRequest: (handler: (player: Player, input: unknown) => Promise<RpcResult<unknown>>) => void;
-					}
-				).onRequest(async (player, input) => {
+				const requestRemote = remoteNode as {
+					onRequest: (
+						self: unknown,
+						handler: (player: Player, input: unknown) => Promise<RpcResult<unknown>>,
+					) => void;
+				};
+
+				requestRemote.onRequest(requestRemote, async (player, input) => {
 					try {
 						const result = await runProcedure({
 							config: options.t._config,
@@ -111,54 +114,57 @@ export function createServer<TContext, TRouter extends Router<TContext, any>>(op
 			}
 
 			if (isServerEvent(node)) {
-				(remoteNode as { connect: (listener: (player: Player, input: unknown) => void) => () => void }).connect(
-					(player, input) => {
-						task.spawn(async () => {
-							try {
-								await runServerEvent({
-									config: options.t._config,
-									path,
-									input,
-									player,
-									inputValidator: node._def.inputValidator,
-									middlewares: node._def.middlewares,
-									handle: async ({ ctx, input: payload, path: eventPath, player: eventPlayer }) =>
-										node._def.handle({
-											ctx,
-											input: payload,
-											path: eventPath,
-											player: eventPlayer,
-											direction: "server",
-										}),
-								});
-							} catch (caught) {
-								warn(
-									`[rbxts-trpc] server event error on '${path}':`,
-									formatError(options.t._config as never, caught),
-								);
-							}
-						});
-					},
-				);
+				const connectRemote = remoteNode as {
+					connect: (self: unknown, listener: (player: Player, input: unknown) => void) => () => void;
+				};
+
+				connectRemote.connect(connectRemote, (player, input) => {
+					task.spawn(async () => {
+						try {
+							await runServerEvent({
+								config: options.t._config,
+								path,
+								input,
+								player,
+								inputValidator: node._def.inputValidator,
+								middlewares: node._def.middlewares,
+								handle: async ({ ctx, input: payload, path: eventPath, player: eventPlayer }) =>
+									node._def.handle({
+										ctx,
+										input: payload,
+										path: eventPath,
+										player: eventPlayer,
+										direction: "server",
+									}),
+							});
+						} catch (caught) {
+							warn(
+								`[rbxts-trpc] server event error on '${path}':`,
+								formatError(options.t._config as never, caught),
+							);
+						}
+					});
+				});
 				continue;
 			}
 
 			if (isClientEvent(node)) {
+				const eventRemote = remoteNode as {
+					fire: (self: unknown, player: Player, payload: unknown) => void;
+					fireAll: (self: unknown, payload: unknown) => void;
+					fireAllExcept: (self: unknown, player: Player, payload: unknown) => void;
+					firePlayers: (self: unknown, players: readonly Player[], payload: unknown) => void;
+				};
+
 				eventsTarget[keyName] = {
 					__kind: "clientEvent",
 					__path: path,
-					emit: (player: Player, input: unknown) =>
-						(remoteNode as { fire: (player: Player, payload: unknown) => void }).fire(player, input),
-					emitAll: (input: unknown) => (remoteNode as { fireAll: (payload: unknown) => void }).fireAll(input),
+					emit: (player: Player, input: unknown) => eventRemote.fire(eventRemote, player, input),
+					emitAll: (input: unknown) => eventRemote.fireAll(eventRemote, input),
 					emitAllExcept: (player: Player, input: unknown) =>
-						(remoteNode as { fireAllExcept: (player: Player, payload: unknown) => void }).fireAllExcept(
-							player,
-							input,
-						),
+						eventRemote.fireAllExcept(eventRemote, player, input),
 					emitPlayers: (players: readonly Player[], input: unknown) =>
-						(
-							remoteNode as { firePlayers: (players: readonly Player[], payload: unknown) => void }
-						).firePlayers(players, input),
+						eventRemote.firePlayers(eventRemote, players, input),
 				};
 			}
 		}
@@ -174,7 +180,8 @@ export function createServer<TContext, TRouter extends Router<TContext, any>>(op
 		remotes,
 		events: eventEmitters,
 		destroy() {
-			(remotes as { destroy?: () => void }).destroy?.();
+			const destroyRemote = remotes as { destroy?: (self: unknown) => void };
+			destroyRemote.destroy?.(destroyRemote);
 		},
 	};
 }
