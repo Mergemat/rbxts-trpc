@@ -1,0 +1,12 @@
+{
+	"name": "rbxts-trpc-package",
+	"tree": {
+		"$className": "Folder",
+		"include": {
+			"$path": "include"
+		},
+		"rbxts-trpc": {
+			"$path": "dist"
+		}
+	}
+}

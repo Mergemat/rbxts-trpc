@@ -15,13 +15,15 @@
 	},
 	"scripts": {
 		"build": "rbxtsc",
+		"model": "mkdir -p build && rojo build build.project.json -o build/rbxts-trpc.rbxm",
+		"build:all": "bun run build && bun run model",
 		"watch": "rbxtsc -w",
 		"lint": "eslint . --ext .ts,.tsx",
 		"lint:fix": "eslint . --ext .ts,.tsx --fix",
 		"docs:dev": "bun run --cwd docs dev",
 		"docs:build": "bun run --cwd docs build",
 		"docs:lint": "bun run --cwd docs lint",
-		"prepublishOnly": "npm run build"
+		"prepublishOnly": "bun run build"
 	},
 	"keywords": [
 		"roblox",
