@@ -24,4 +24,11 @@ export type {
 	ServerEventProxy,
 	Validator,
 } from "./core/types";
-export type { inferContext, inferEventPayloads, inferRouterInputs, inferRouterOutputs } from "./infer";
+export type {
+	inferContext,
+	inferEventPayloads,
+	inferProcedureInput,
+	inferProcedureOutput,
+	inferRouterInputs,
+	inferRouterOutputs,
+} from "./infer";

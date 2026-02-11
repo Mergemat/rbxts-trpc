@@ -8,6 +8,9 @@ local testRouter = trpc:router({
 		list = trpc.procedure:intent("query"):output(validator.array(validator.string)):resolve(function()
 			return { "Milk" }
 		end),
+		ping = trpc.procedure:output(validator.boolean):resolve(function()
+			return true
+		end),
 		add = trpc.procedure:input(validator.string):output(validator.boolean):resolve(function(_param)
 			local input = _param.input
 			return #input > 0
@@ -18,7 +21,7 @@ local testRouter = trpc:router({
 		end),
 	}),
 })
-local typeTestsCompile = { true, true, true, true, true, true }
+local typeTestsCompile = { true, true, true, true, true, true, true, true, true, true, true, true, true }
 return {
 	typeTestsCompile = typeTestsCompile,
 }

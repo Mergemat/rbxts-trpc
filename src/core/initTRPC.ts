@@ -1,7 +1,7 @@
 import { ClientEventBuilder, ServerEventBuilder } from "./event";
 import { ProcedureBuilder } from "./procedure";
 import { createRouter } from "./router";
-import type { InitTRPCConfig, RouterShape } from "./types";
+import type { InitTRPCConfig, Router, RouterShape } from "./types";
 
 export interface TRPCFactory<TContext> {
 	readonly _config: InitTRPCConfig<TContext>;
@@ -10,7 +10,7 @@ export interface TRPCFactory<TContext> {
 		readonly server: ServerEventBuilder<TContext, undefined>;
 		readonly client: ClientEventBuilder<TContext, undefined>;
 	};
-	router<TShape extends RouterShape<TContext>>(shape: TShape): ReturnType<typeof createRouter<TContext, TShape>>;
+	router<TShape extends RouterShape<TContext>>(shape: TShape): Router<TContext, TShape>;
 }
 
 class FactoryImpl<TContext> implements TRPCFactory<TContext> {

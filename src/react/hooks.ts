@@ -50,7 +50,7 @@ export function useRPCQuery<TInput, TOutput>(
 		setState((current: QueryState<TOutput>) => ({ ...current, isLoading: true }));
 
 		return procedure
-			.query(input)
+			.query(...([input] as Parameters<typeof procedure.query>))
 			.then((data) => {
 				queryCache[key] = data;
 				setState({ data, isLoading: false });
@@ -95,12 +95,14 @@ export function useRPCMutation<TInput, TOutput>(
 		isPending: false,
 	});
 
+	type MutationArgs = Parameters<typeof procedure.mutate>;
+
 	const mutateAsync = React.useCallback(
-		(input: TInput) => {
+		(...args: MutationArgs) => {
 			setState((current: MutationState<TOutput>) => ({ ...current, isPending: true, error: undefined }));
 
 			return procedure
-				.mutate(input)
+				.mutate(...args)
 				.then((data) => {
 					setState({ isPending: false, data });
 					options.onSuccess?.(data);
@@ -121,8 +123,8 @@ export function useRPCMutation<TInput, TOutput>(
 	);
 
 	const mutate = React.useCallback(
-		(input: TInput) => {
-			mutateAsync(input).catch(() => undefined);
+		(...args: MutationArgs) => {
+			mutateAsync(...args).catch(() => undefined);
 		},
 		[mutateAsync],
 	);
@@ -138,6 +140,6 @@ export function useRPCEvent<TInput>(event: ClientEventProxy<TInput>, listener: (
 	React.useEffect(() => event.on(listener), [event, listener]);
 }
 
-export function invalidateRPCQuery(path: string, input: unknown) {
+export function invalidateRPCQuery(path: string, input?: unknown) {
 	queryCache[createQueryKey(path, input)] = undefined;
 }

@@ -153,6 +153,9 @@ export interface RpcFailure {
 
 export type RpcResult<TData> = RpcSuccess<TData> | RpcFailure;
 
+export type ProcedureArgs<TInput> = [TInput] extends [undefined] ? [] | [input: TInput] : [input: TInput];
+export type EventArgs<TInput> = [TInput] extends [undefined] ? [] | [input: TInput] : [input: TInput];
+
 interface ProcedureCallProxyBase<TIntent extends ProcedureIntent> {
 	__kind: "procedure";
 	__path: string;
@@ -161,16 +164,16 @@ interface ProcedureCallProxyBase<TIntent extends ProcedureIntent> {
 
 export type ProcedureCallProxy<TInput, TOutput, TIntent extends ProcedureIntent> = TIntent extends "query"
 	? ProcedureCallProxyBase<TIntent> & {
-			query: (input: TInput) => Promise<TOutput>;
+			query: (...args: ProcedureArgs<TInput>) => Promise<TOutput>;
 		}
 	: ProcedureCallProxyBase<TIntent> & {
-			mutate: (input: TInput) => Promise<TOutput>;
+			mutate: (...args: ProcedureArgs<TInput>) => Promise<TOutput>;
 		};
 
 export interface ServerEventProxy<TInput> {
 	__kind: "serverEvent";
 	__path: string;
-	emit: (input: TInput) => void;
+	emit: (...args: EventArgs<TInput>) => void;
 }
 
 export interface ClientEventProxy<TInput> {
@@ -182,13 +185,13 @@ export interface ClientEventProxy<TInput> {
 export interface ServerClientEventEmitter<TInput> {
 	__kind: "clientEvent";
 	__path: string;
-	emit: (player: Player, input: TInput) => void;
-	emitAll: (input: TInput) => void;
-	emitAllExcept: (player: Player, input: TInput) => void;
-	emitPlayers: (players: readonly Player[], input: TInput) => void;
+	emit: (player: Player, ...args: EventArgs<TInput>) => void;
+	emitAll: (...args: EventArgs<TInput>) => void;
+	emitAllExcept: (player: Player, ...args: EventArgs<TInput>) => void;
+	emitPlayers: (players: readonly Player[], ...args: EventArgs<TInput>) => void;
 }
 
-export type ServerEventTree<TRouter extends Router<unknown>> = ServerEventTreeFromShape<TRouter["_def"]["shape"]>;
+export type ServerEventTree<TRouter extends Router<any>> = ServerEventTreeFromShape<TRouter["_def"]["shape"]>;
 
 export type ServerEventTreeFromShape<TShape> = {
 	[K in keyof TShape as TShape[K] extends ClientEvent<any, any> | Router<any, any>

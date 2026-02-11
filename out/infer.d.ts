@@ -18,4 +18,6 @@ export type inferRouterInputs<TRouter extends Router<any, RouterShape<any>>> = I
 export type inferRouterOutputs<TRouter extends Router<any, RouterShape<any>>> = OutputsFromShape<TRouter["_def"]["shape"]>;
 export type inferEventPayloads<TRouter extends Router<any, RouterShape<any>>> = EventPayloadsFromShape<TRouter["_def"]["shape"]>;
 export type inferContext<TRouter extends Router<any, RouterShape<any>>> = TRouter extends Router<infer TContext, RouterShape<any>> ? TContext : never;
+export type inferProcedureInput<TProcedure extends Procedure<any, any, any, any>> = TProcedure extends Procedure<any, infer TInput, any, any> ? TInput : never;
+export type inferProcedureOutput<TProcedure extends Procedure<any, any, any, any>> = TProcedure extends Procedure<any, any, infer TOutput, any> ? TOutput : never;
 export {};

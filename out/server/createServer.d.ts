@@ -1,6 +1,6 @@
 import type { TRPCFactory } from "../core/initTRPC";
-import type { Router } from "../core/types";
-export declare function createServer<TContext, TRouter extends Router<TContext, any>>(options: {
+import type { Router, RouterShape } from "../core/types";
+export declare function createServer<TContext, TRouter extends Router<TContext, RouterShape<TContext>>>(options: {
     t: TRPCFactory<TContext>;
     router: TRouter;
 }): {

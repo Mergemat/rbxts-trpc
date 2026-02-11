@@ -26,7 +26,7 @@ local function useRPCQuery(procedure, input, options)
 			_object.isLoading = true
 			return _object
 		end)
-		return procedure.query(input):andThen(function(data)
+		return procedure.query(unpack(({ input }))):andThen(function(data)
 			queryCache[key] = data
 			setState({
 				data = data,
@@ -71,7 +71,8 @@ local function useRPCMutation(procedure, options)
 	local state, setState = React.useState({
 		isPending = false,
 	})
-	local mutateAsync = React.useCallback(function(input)
+	local mutateAsync = React.useCallback(function(...)
+		local args = { ... }
 		setState(function(current)
 			local _object = table.clone(current)
 			setmetatable(_object, nil)
@@ -79,7 +80,7 @@ local function useRPCMutation(procedure, options)
 			_object.error = nil
 			return _object
 		end)
-		return procedure.mutate(input):andThen(function(data)
+		return procedure.mutate(unpack(args)):andThen(function(data)
 			setState({
 				isPending = false,
 				data = data,
@@ -105,8 +106,9 @@ local function useRPCMutation(procedure, options)
 			error(clientError)
 		end)
 	end, { procedure, options.onError, options.onSuccess })
-	local mutate = React.useCallback(function(input)
-		mutateAsync(input):catch(function()
+	local mutate = React.useCallback(function(...)
+		local args = { ... }
+		mutateAsync(unpack(args)):catch(function()
 			return nil
 		end)
 	end, { mutateAsync })

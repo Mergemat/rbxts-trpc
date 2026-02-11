@@ -46,6 +46,7 @@
 	"files": [
 		"index.d.ts",
 		"react/index.d.ts",
+		"react/init.luau",
 		"out",
 		"!out/examples/**",
 		"!out/tests/**",

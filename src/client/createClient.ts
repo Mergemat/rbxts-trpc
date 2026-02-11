@@ -22,7 +22,9 @@ type ClientNode<TContext> =
 	| ClientEvent<TContext, unknown>
 	| Router<TContext, RouterShape<TContext>>;
 
-type ClientShapeFromRouter<TRouter extends Router<any, any>> = ClientShapeFromNodes<TRouter["_def"]["shape"]>;
+type ClientShapeFromRouter<TRouter extends Router<any, RouterShape<any>>> = ClientShapeFromNodes<
+	TRouter["_def"]["shape"]
+>;
 
 type ClientShapeFromNodes<TShape> = {
 	[K in keyof TShape]: TShape[K] extends Router<any, any>
@@ -54,7 +56,7 @@ function isClientEventNode<TContext>(node: ClientNode<TContext>): node is Client
 	return node._def.kind === "event" && node._def.direction === "client";
 }
 
-export function createClient<TContext, TRouter extends Router<TContext, any>>(options: {
+export function createClient<TContext, TRouter extends Router<TContext, RouterShape<TContext>>>(options: {
 	t: TRPCFactory<TContext>;
 	router: TRouter;
 }): ClientShapeFromRouter<TRouter> {

@@ -56,7 +56,7 @@ function isClientEvent<TContext>(value: unknown): value is ClientEvent<TContext,
 	);
 }
 
-export function createServer<TContext, TRouter extends Router<TContext, any>>(options: {
+export function createServer<TContext, TRouter extends Router<TContext, RouterShape<TContext>>>(options: {
 	t: TRPCFactory<TContext>;
 	router: TRouter;
 }) {

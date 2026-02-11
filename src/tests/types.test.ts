@@ -1,6 +1,13 @@
 import { t as validator } from "@rbxts/t";
 import { initTRPC } from "../index";
-import type { inferEventPayloads, inferRouterInputs, inferRouterOutputs } from "../index";
+import type {
+	inferEventPayloads,
+	inferProcedureInput,
+	inferProcedureOutput,
+	inferRouterInputs,
+	inferRouterOutputs,
+	ProcedureCallProxy,
+} from "../index";
 
 type Equals<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
 type Expect<T extends true> = T;
@@ -17,6 +24,7 @@ const testRouter = trpc.router({
 			.intent("query")
 			.output<string[]>(validator.array(validator.string))
 			.resolve(() => ["Milk"]),
+		ping: trpc.procedure.output<boolean>(validator.boolean).resolve(() => true),
 		add: trpc.procedure
 			.input<string>(validator.string)
 			.output<boolean>(validator.boolean)
@@ -40,6 +48,24 @@ type ListIntent = typeof testRouter._def.shape.todos._def.shape.list._def.intent
 type TestDefaultIntentIsMutation = Expect<Equals<AddIntent, "mutation">>;
 type TestQueryIntent = Expect<Equals<ListIntent, "query">>;
 
+type ListProcedure = typeof testRouter._def.shape.todos._def.shape.list;
+type AddProcedure = typeof testRouter._def.shape.todos._def.shape.add;
+
+type TestInferProcedureInputList = Expect<Equals<inferProcedureInput<ListProcedure>, undefined>>;
+type TestInferProcedureOutputList = Expect<Equals<inferProcedureOutput<ListProcedure>, string[]>>;
+type TestInferProcedureInputAdd = Expect<Equals<inferProcedureInput<AddProcedure>, string>>;
+type TestInferProcedureOutputAdd = Expect<Equals<inferProcedureOutput<AddProcedure>, boolean>>;
+
+type TestQueryNoInputArgs = Expect<
+	Equals<Parameters<ProcedureCallProxy<undefined, string[], "query">["query"]>, [] | [undefined]>
+>;
+type TestMutationNoInputArgs = Expect<
+	Equals<Parameters<ProcedureCallProxy<undefined, boolean, "mutation">["mutate"]>, [] | [undefined]>
+>;
+type TestMutationRequiredInputArgs = Expect<
+	Equals<Parameters<ProcedureCallProxy<string, boolean, "mutation">["mutate"]>, [string]>
+>;
+
 export const typeTestsCompile: [
 	TestInputAdd,
 	TestOutputList,
@@ -47,4 +73,11 @@ export const typeTestsCompile: [
 	TestServerEventInput,
 	TestDefaultIntentIsMutation,
 	TestQueryIntent,
-] = [true, true, true, true, true, true];
+	TestInferProcedureInputList,
+	TestInferProcedureOutputList,
+	TestInferProcedureInputAdd,
+	TestInferProcedureOutputAdd,
+	TestQueryNoInputArgs,
+	TestMutationNoInputArgs,
+	TestMutationRequiredInputArgs,
+] = [true, true, true, true, true, true, true, true, true, true, true, true, true];
