@@ -1,0 +1,83 @@
+---
+title: Getting Started
+description: Install rbxts-trpc and wire your first client/server pair.
+---
+
+## Install
+
+```sh
+bun add @rbxts/rbxts-trpc @rbxts/remo @rbxts/t
+```
+
+If you use React hooks, also install `@rbxts/react`.
+
+## 1) Create a factory
+
+```ts
+import { initTRPC } from "@rbxts/rbxts-trpc";
+
+interface Context {
+	player?: Player;
+}
+
+export const trpc = initTRPC()
+	.context<Context>()
+	.create({
+		createContext: ({ player }) => ({ player }),
+	});
+```
+
+## 2) Define a router
+
+```ts
+import { t } from "@rbxts/t";
+
+export const appRouter = trpc.router({
+	todos: trpc.router({
+		list: trpc.procedure
+			.intent("query")
+			.output<string[]>(t.array(t.string))
+			.resolve(() => ["Milk", "Eggs"]),
+
+		add: trpc.procedure
+			.input<string>(t.string)
+			.output<boolean>(t.boolean)
+			.resolve(({ input }) => input.size() > 0),
+
+		changed: trpc.event.client.input<string[]>(t.array(t.string)).create(),
+	}),
+});
+```
+
+## 3) Mount the server
+
+```ts
+import { createServer } from "@rbxts/rbxts-trpc";
+
+const server = createServer({
+	t: trpc,
+	router: appRouter,
+});
+
+server.events.todos.changed.emitAll(["Milk", "Eggs", "Bread"]);
+```
+
+## 4) Use the client
+
+```ts
+import { createClient } from "@rbxts/rbxts-trpc";
+
+const client = createClient({
+	t: trpc,
+	router: appRouter,
+});
+
+client.todos.list.call(undefined).then((todos) => print(todos.size()));
+client.todos.changed.on((todos) => print(`changed ${todos.size()}`));
+```
+
+## Next steps
+
+- Follow the guides for architecture and usage patterns
+- Open API reference for full surface area
+- Add middleware for auth, logging, and metrics

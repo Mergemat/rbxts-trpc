@@ -18,6 +18,9 @@
 		"watch": "rbxtsc -w",
 		"lint": "eslint . --ext .ts,.tsx",
 		"lint:fix": "eslint . --ext .ts,.tsx --fix",
+		"docs:dev": "bun run --cwd docs dev",
+		"docs:build": "bun run --cwd docs build",
+		"docs:lint": "bun run --cwd docs lint",
 		"prepublishOnly": "npm run build"
 	},
 	"keywords": [],

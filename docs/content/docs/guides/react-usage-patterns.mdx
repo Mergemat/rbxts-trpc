@@ -1,0 +1,47 @@
+---
+title: React Usage Patterns
+description: Use the optional hooks package for predictable game UI data flows.
+---
+
+The React helpers are intentionally small and explicit.
+
+## Query + Mutation pattern
+
+```tsx
+import { invalidateRPCQuery, useRPCMutation, useRPCQuery } from "@rbxts/rbxts-trpc/react";
+
+const todosQuery = useRPCQuery(client.todos.getAll, undefined);
+
+const addTodo = useRPCMutation(client.todos.add, {
+	onSuccess: () => {
+		invalidateRPCQuery(client.todos.getAll.__path, undefined);
+		todosQuery.refetch();
+	},
+});
+```
+
+## Event-driven refresh pattern
+
+```tsx
+import { useRPCEvent } from "@rbxts/rbxts-trpc/react";
+
+useRPCEvent(client.todos.changed, () => {
+	todosQuery.refetch();
+});
+```
+
+## Choosing invalidation vs direct updates
+
+- Use **invalidation + refetch** for authoritative server state
+- Use **direct local update** for temporary optimistic UI
+- Use **client events** to fan out changes from server to many clients
+
+For game UIs, this hybrid works well: optimistic local feedback, then invalidate on ack/event.
+
+## Common pitfalls
+
+- Calling `useRPCQuery` with a mutation procedure
+- Forgetting to unsubscribe from manual event listeners
+- Treating high-frequency replicated gameplay state as query data
+
+For per-frame state, use dedicated replication/state channels; keep RPC for domain operations.

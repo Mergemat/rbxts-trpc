@@ -1,0 +1,5 @@
+{
+	"title": "rbxts-trpc",
+	"description": "Type-safe procedures and events for Roblox TS.",
+	"pages": ["index", "getting-started", "guides", "reference"]
+}

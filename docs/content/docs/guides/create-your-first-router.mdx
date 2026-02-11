@@ -1,0 +1,69 @@
+---
+title: Create Your First Router
+description: Model your game API with procedures and events.
+---
+
+This guide sets up a small `todos` contract with both RPC calls and events.
+
+## Define context
+
+```ts
+import { initTRPC } from "@rbxts/rbxts-trpc";
+
+interface GameContext {
+	player?: Player;
+	requestId: string;
+}
+
+const trpc = initTRPC()
+	.context<GameContext>()
+	.create({
+		createContext: ({ player, path }) => ({
+			player,
+			requestId: `req:${path}`,
+		}),
+	});
+```
+
+## Build a router tree
+
+```ts
+import { t } from "@rbxts/t";
+
+const todoName = t.string;
+const todoList = t.array(todoName);
+
+export const appRouter = trpc.router({
+	todos: trpc.router({
+		getAll: trpc.procedure
+			.intent("query")
+			.output<string[]>(todoList)
+			.resolve(() => ["Milk", "Eggs"]),
+
+		add: trpc.procedure
+			.input<string>(todoName)
+			.output<string[]>(todoList)
+			.resolve(({ input }) => ["Milk", "Eggs", input]),
+
+		addViaEvent: trpc.event.server.input<string>(todoName).handle(({ input }) => {
+			print(`event add ${input}`);
+		}),
+
+		changed: trpc.event.client.input<string[]>(todoList).create(),
+	}),
+});
+```
+
+## Why mix procedures and events?
+
+- Procedures are request/response and easier to reason about
+- Events are push-based and better for fan-out updates
+- Keeping both in one contract avoids type drift
+
+## Recommended pattern
+
+Use this split for most games:
+
+- **Procedures:** authoritative reads/writes
+- **Server events:** user intents that do not need response payloads
+- **Client events:** broadcasts and invalidation signals

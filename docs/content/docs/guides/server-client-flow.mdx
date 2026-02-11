@@ -1,0 +1,56 @@
+---
+title: Server and Client Flow
+description: Understand how requests and events travel through middleware and validators.
+---
+
+rbxts-trpc runs strict boundaries in this order:
+
+1. Validate input
+2. Create context
+3. Run middleware chain
+4. Execute resolver/handler/listeners
+5. Validate output (procedures only)
+
+## Procedure lifecycle
+
+```ts
+const protectedMutation = trpc.procedure
+	.input<string>(t.string)
+	.use(async ({ ctx, next }) => {
+		if (!ctx.player) {
+			throw new TRPCError("UNAUTHORIZED", "Sign in required");
+		}
+
+		return next();
+	})
+	.resolve(({ input }) => input.size());
+```
+
+## Event lifecycle
+
+Server-bound events (`trpc.event.server`) run on server when clients emit.
+
+Client-bound events (`trpc.event.client`) are emitted from server and listened to on client.
+
+```ts
+client.todos.changed.on((todos) => {
+	print(`received ${todos.size()} todos`);
+});
+```
+
+## Error strategy
+
+- Throw `TRPCError` for known API errors
+- Unknown errors become `INTERNAL_SERVER_ERROR`
+- Use `errorFormatter` to standardize `data` payloads
+
+## Observability pattern
+
+Add one middleware near root that captures:
+
+- path
+- duration
+- player id
+- result (`ok/error`)
+
+This gives enough data to monitor API health in production games.

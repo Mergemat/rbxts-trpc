@@ -1,0 +1,95 @@
+---
+title: API Reference
+description: Core APIs and behavior of rbxts-trpc.
+---
+
+## `initTRPC`
+
+Creates a typed factory.
+
+```ts
+const trpc = initTRPC()
+	.context<MyContext>()
+	.create({
+		createContext: ({ player, path, kind }) => ({ player, path, kind }),
+		errorFormatter: (shape) => shape,
+	});
+```
+
+### Config
+
+- `createContext(options)` called per procedure/event execution
+- `errorFormatter(shape)` transforms outbound error payloads
+
+## `trpc.procedure`
+
+Procedure builder chain:
+
+- `.input<T>(validator)`
+- `.output<T>(validator)`
+- `.use(middleware)`
+- `.intent('query' | 'mutation')` (default is `'mutation'`)
+- `.resolve(({ ctx, input, path, player, intent }) => output)`
+
+## `trpc.event.server`
+
+Client -> server event.
+
+- `.input<T>(validator)`
+- `.use(middleware)`
+- `.handle(({ ctx, input, path, player, direction }) => void)`
+
+## `trpc.event.client`
+
+Server -> client event.
+
+- `.input<T>(validator)`
+- `.use(middleware)`
+- `.create()`
+
+From `createServer(...).events`, client events expose:
+
+- `emit(player, input)`
+- `emitAll(input)`
+- `emitAllExcept(player, input)`
+- `emitPlayers(players, input)`
+
+## `createServer`
+
+```ts
+const server = createServer({ t: trpc, router: appRouter });
+```
+
+Returns:
+
+- `remotes` (underlying remo remotes)
+- `events` (typed tree for client events)
+- `destroy()`
+
+## `createClient`
+
+```ts
+const client = createClient({ t: trpc, router: appRouter });
+```
+
+Generated proxies:
+
+- Procedures: `.call(input): Promise<output>`
+- Server events: `.emit(input): void`
+- Client events: `.on(listener): () => void`
+
+## React Helpers
+
+From `@rbxts/rbxts-trpc/react`:
+
+- `useRPCQuery(procedure, input, options?)`
+- `useRPCMutation(procedure, options?)`
+- `useRPCEvent(event, listener)`
+- `invalidateRPCQuery(path, input)`
+
+## Type Helpers
+
+- `inferRouterInputs<TRouter>`
+- `inferRouterOutputs<TRouter>`
+- `inferEventPayloads<TRouter>`
+- `inferContext<TRouter>`
